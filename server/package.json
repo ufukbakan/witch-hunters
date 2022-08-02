@@ -1,0 +1,26 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js",
+    "test": "mocha"
+  },
+  "keywords": [
+    "witch",
+    "hunters",
+    "server"
+  ],
+  "author": "Ufuk Bakan",
+  "license": "ISC",
+  "dependencies": {
+    "precision-timeout-interval": "^3.1.0",
+    "socket.io": "^4.5.1"
+  },
+  "devDependencies": {
+    "mocha": "^10.0.0",
+    "rewire": "^6.0.0"
+  }
+}

@@ -1,0 +1,34 @@
+body{
+  margin: 0;
+  padding: 0;
+  background: #222;
+  color: #fff;
+}
+
+canvas{
+  image-rendering: crisp-edges;
+  display: inline-block;
+}
+
+.scores{
+  display: inline-block;
+  padding: 1em;
+}
+
+#app{
+  margin-top: 2em;
+}
+
+#app > *{
+  vertical-align: top;
+}
+
+button{
+  padding: .2em 2em;
+}
+
+.asset{
+  position: absolute;
+  left: 0;
+  transform: translateX(-100%);
+}
