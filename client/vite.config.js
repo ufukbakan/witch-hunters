@@ -8,5 +8,8 @@ export default defineConfig({
     host: true,
     open: true,
     port: 80,
+  },
+  build: {
+    target: "esnext"
   }
 })
