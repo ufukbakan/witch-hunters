@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "cd server; (npm run start&); cd ../client; (npm run dev&)",
-    "build": "cd server; (npm run start&); cd ../client; (npm run build&)"
+    "start": "concurrently 'npm --prefix server run start' 'npm --prefix client run dev'",
+    "build": "concurrently 'npm --prefix server run start' 'npm --prefix client run build'"
   },
   "repository": {
     "type": "git",
@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/ufukbakan/witch-hunters/issues"
   },
-  "homepage": "https://github.com/ufukbakan/witch-hunters#readme"
+  "homepage": "https://github.com/ufukbakan/witch-hunters#readme",
+  "dependencies": {
+    "concurrently": "^7.3.0"
+  }
 }
