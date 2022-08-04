@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "concurrently 'npm --prefix server run start' 'npm --prefix client run dev' &",
-    "build": "forever start server/index.js && npm --prefix client run build"
+    "vercel-build": "forever start server/index.js && npm --prefix client run build",
+    "build": "npm --prefix client run build"
   },
   "repository": {
     "type": "git",
