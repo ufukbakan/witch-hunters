@@ -10,6 +10,7 @@ export default defineConfig({
     port: 80,
   },
   build: {
-    target: "esnext"
+    target: "esnext",
+    outDir: "../dist"
   }
 })
