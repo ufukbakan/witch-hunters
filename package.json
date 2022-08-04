@@ -1,0 +1,25 @@
+{
+  "name": "witch-hunters",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "cd server; (npm run start&); cd ../client; npm run dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ufukbakan/witch-hunters.git"
+  },
+  "keywords": [
+    "witch",
+    "hunters",
+    "game",
+    "online"
+  ],
+  "author": "Ufuk Bakan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ufukbakan/witch-hunters/issues"
+  },
+  "homepage": "https://github.com/ufukbakan/witch-hunters#readme"
+}
