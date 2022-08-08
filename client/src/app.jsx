@@ -4,8 +4,8 @@ import Login from './components/Login'
 import io from "socket.io-client"
 import PreloadAssets from './utilities/PreloadAssets';
 
-const SERVER_PORT = 443;
-const wsurl = "wss://"+ location.host +":"+SERVER_PORT;
+const SERVER_PORT = 9092;
+const wsurl = "ws://"+ location.host +":"+SERVER_PORT;
 export const clientSocket = io(wsurl, {
   transports: ["websocket"],
   secure: true

@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "concurrently \"npm --prefix server run start\" \"npm --prefix client run dev\"",
+    "prepare": "npm --prefix client install && npm --prefix server install",
     "vercel-build": "forever start server/index.js && npm --prefix client run build",
     "build": "npm --prefix client run build"
   },

@@ -9,7 +9,7 @@ const io = require('socket.io')({
     allowEIO3: true,
 });
 
-io.listen(443);
+io.listen(9092);
 
 io.on('connection', client => {
     client.on("request-create-room", (msg)=>{
