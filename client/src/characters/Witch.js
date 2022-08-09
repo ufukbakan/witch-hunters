@@ -21,7 +21,7 @@
  * @enum {string}
  * @readonly
  */
- export const WitchStates = {
+export const WitchStates = {
     "fly": "fly",
     "dead": "dead"
 }
@@ -45,7 +45,7 @@ import { Direction, FreezySpriteLoader } from "../utilities/SpriteLoader";
 // import deathSprite from "/src/assets/blue-witch/B_witch_death.png";
 import redWitch from "../assets/red_witch.png";
 import redWitchLeft from "../assets/red_witch_left.png";
-import { angleToVector, isBetween, vectorToAngle } from "../utilities/TransformHelper";
+import { angleToVector, isBetween, makeNegative, makePositive, vectorToAngle } from "../utilities/TransformHelper";
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "../components/Game";
 import { assets } from "../utilities/PreloadAssets";
 
@@ -71,8 +71,8 @@ export default class Witch {
             // death: new SpriteLoader({ path: deathSprite, frames: 12, direction: Direction.vertical, loop: false }),
             // fly: new FreezySpriteLoader({ path: "http://localhost/src/assets/red_witch.png", frames: 32, direction: Direction.horizontal}, 10),
             // flyLeft: new FreezySpriteLoader({ path: "http://localhost/src/assets/red_witch_left.png", frames: 32, direction: Direction.horizontal}, 10),
-            fly: new FreezySpriteLoader({ path: redWitch, frames: 32, direction: Direction.horizontal}, 10),
-            flyLeft: new FreezySpriteLoader({ path: redWitchLeft, frames: 32, direction: Direction.horizontal}, 10),
+            fly: new FreezySpriteLoader({ path: redWitch, frames: 32, direction: Direction.horizontal }, 10),
+            flyLeft: new FreezySpriteLoader({ path: redWitchLeft, frames: 32, direction: Direction.horizontal }, 10),
         };
         this.state = WitchStates.fly;
         this.sprite = this.sprites[this.state];
@@ -92,37 +92,46 @@ export default class Witch {
         this.velocity = angleToVector(this.direction, this.speed);
         this.position.x += this.velocity.x;
         this.position.y -= this.velocity.y;
-        if(this.position.x < 0 || this.position.x > CANVAS_WIDTH - 16){
-            this.velocity.x *= -1;
-            this.direction = vectorToAngle(this.velocity);
-        }else if(this.position.y < 0 || this.position.y > CANVAS_HEIGHT){
-            this.velocity.y *= -1;
+        if (this.position.x < 0) {
+            this.velocity.x = makePositive(this.velocity.x);
             this.direction = vectorToAngle(this.velocity);
         }
-        if(this.direction < 0){
-            this.direction += 2*Math.PI;
-        }else if(this.direction > Math.PI*2){
-            this.direction = (this.direction) % (Math.PI*2);
+        else if (this.position.x > CANVAS_WIDTH - 16) {
+            this.velocity.x = makeNegative(this.velocity.x);
+            this.direction = vectorToAngle(this.velocity);
         }
-        if(this.facing == Facing.LEFT && !isBetween(this.direction, Math.PI/2, 3*Math.PI/2)){
+        if (this.position.y < 0) {
+            this.velocity.y = makeNegative(this.velocity.y);
+            this.direction = vectorToAngle(this.velocity);
+        }
+        else if (this.position.y > CANVAS_HEIGHT) {
+            this.velocity.y = makePositive(this.velocity.y);
+            this.direction = vectorToAngle(this.velocity);
+        }
+        if (this.direction < 0) {
+            this.direction += 2 * Math.PI;
+        } else if (this.direction > Math.PI * 2) {
+            this.direction = (this.direction) % (Math.PI * 2);
+        }
+        if (this.facing == Facing.LEFT && !isBetween(this.direction, Math.PI / 2, 3 * Math.PI / 2)) {
             this.facing = Facing.RIGHT;
             this.sprite = this.sprites.fly;
         }
-        else if(this.facing == Facing.RIGHT && isBetween(this.direction, Math.PI/2, 3*Math.PI/2) ){
+        else if (this.facing == Facing.RIGHT && isBetween(this.direction, Math.PI / 2, 3 * Math.PI / 2)) {
             this.facing = Facing.LEFT;
             this.sprite = this.sprites.flyLeft;
         }
     }
 
-    setState(newState){
-        if(this.state != newState){
+    setState(newState) {
+        if (this.state != newState) {
             this.state = newState;
             // this.sprite = this.sprites[this.state];
             // this.sprite.currentFrame = 0;
         }
     }
 
-    getBoundingBox(){
+    getBoundingBox() {
         return {
             left: this.position.x - this.sprite.width / 2,
             right: this.position.x + this.sprite.width / 2,
