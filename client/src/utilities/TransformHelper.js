@@ -38,3 +38,21 @@ export function isBetween(x, lower, upper){
     }
     return false;
 }
+
+/**
+ * 
+ * @param {number} x 
+ * @returns {number}
+ */
+export function makePositive(x){
+    return x >= 0 ? x : -1*x;
+}
+
+/**
+ * 
+ * @param {number} x 
+ * @returns {number}
+ */
+ export function makeNegative(x){
+    return x < 0 ? x : -1*x;
+}
