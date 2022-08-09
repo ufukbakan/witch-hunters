@@ -68,6 +68,13 @@ class Room {
                 this.warnPlayers();
                 prcTimeout(4000, () => this.startTheGame());
             }
+            clientSocket.on("disconnect", () => {
+                console.log("A player disconnected from " + this.id);
+                if (this.players) {
+                    this.players = this.players.filter(p => p.socket != clientSocket);
+                    this.finishGame();
+                }
+            });
             clientSocket.on("pop-witch", (id) => {
                 const idx = this.aliveWitches.indexOf(id);
                 if (idx >= 0) {
@@ -82,9 +89,7 @@ class Room {
                         }));
                     });
                     if (this.players.find(p => p.score >= 450)) {
-                        this.players.forEach(p => {
-                            p.socket.emit("end-game", true);
-                        });
+                        this.finishGame();
                     } else {
                         this.generateEnoughWitches();
                     }
@@ -95,6 +100,16 @@ class Room {
         }
         console.log("Player couldnt join");
         return new JoinResponse(ProcessResult.FAIL, "The room is FULL");
+    }
+
+    finishGame() {
+        this.aliveWitches = [];
+        this.witchId = 0;
+        this.gameFlow = false;
+        this.players.forEach(p => {
+            p.socket.emit("end-game", true);
+            p.score = 0;
+        });
     }
 
     generateEnoughWitches() {
@@ -139,18 +154,6 @@ class Room {
             posY: Math.round(Math.random() * 500),
             speed: Math.round((Math.random() * 3) + 5 + (this.witchId / 5)),
             direction: Math.random() * Math.PI * 2
-        }
-    }
-
-    disconnectPlayer(client) {
-        console.log("A player has been disconnected");
-        this.gameFlow = false;
-        this.players.splice(
-            this.players.indexOf(client),
-            1
-        );
-        if (this.players[0]) {
-            this.players[0].emit("game-is-ready", false);
         }
     }
 }
