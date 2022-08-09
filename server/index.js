@@ -17,7 +17,6 @@ io.on('connection', client => {
     });
     client.on("join-request", (msg) => {
         const {roomid, username} = msg;
-        console.log({roomid, username});
         client.emit("join-response", joinRoomWithId(roomid, client, username));
     })
 });

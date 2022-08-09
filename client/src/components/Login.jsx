@@ -33,7 +33,7 @@ export default function () {
             <button onClick={createGameRoom}>Create Room</button>
             <button onClick={joinRoom}>Join Room</button>
             <input type="text" id="username" value={username} onChange={(e) => setUsername(e.target.value)} />
-            <input type="text" id="room-id-input" value={roomId} onChange={(e) => setRoomId(e.target.value)} />
+            <input type="text" placeholder="Room ID" id="room-id-input" value={roomId} onChange={(e) => setRoomId(e.target.value)} />
         </div>
     )
 }

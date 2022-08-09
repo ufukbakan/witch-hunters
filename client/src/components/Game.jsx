@@ -1,25 +1,31 @@
-import { useEffect, useState } from "preact/hooks";
-import { prcInterval, prcIntervalWithDelta, prcTimeout } from "precision-timeout-interval";
-import Witch, { WitchStates } from "../characters/Witch";
-import { createParticles, Particle } from "../utilities/ParticleHelper";
-import background from "../assets/background.png";
-import Login from "./Login";
-import { clientSocket } from "../app";
+import { useEffect, useState } from 'preact/hooks';
+import { prcIntervalWithDelta } from 'precision-timeout-interval';
+
+import { clientSocket } from '../app';
+import background from '../assets/background.png';
+import Witch from '../characters/Witch';
+import { ProcessResult } from '../serverTypes/global';
+import { createParticles, Particle } from '../utilities/ParticleHelper';
+import FailModal from './FailModal';
 
 export const CANVAS_WIDTH = 896;
 export const CANVAS_HEIGHT = 504;
 export const FPS = 60;
-/**@type {Array<Witch>} */ const mobs = [];
+/**@type {Array<Witch>} */ let mobs = [];
 /**@type {Array<Particle>} */ let yellowParticles = [];
 /**@type {Array<Particle>} */ let redParticles = [];
+let gameFlow = false;
+
 
 export default function (props) {
     const [myScore, setMyScore] = useState(0);
     const [opponentScore, setOpponentScore] = useState(0);
-    const [gameFlow, setGameFlow] = useState(false);
-    const [scores, setScores] = useState([{username: "p1", score: 0}, {username: "p2", score: 0}]);
+    const [scores, setScores] = useState([{ username: "p1", score: 0 }, { username: "p2", score: 0 }]);
     const backgroundImage = new Image();
     const [countdown, setCountdown] = useState(0);
+    const [showMessage, setShowMessage] = useState(false);
+    const [failMessage, setFailMessage] = useState("");
+
     backgroundImage.src = background;
 
     let /**@type {CanvasRenderingContext2D} */ canvasContext;
@@ -39,17 +45,30 @@ export default function (props) {
                 enemyPopWitch(id);
             });
 
-            clientSocket.on("join-response", (result) => {
-                if (result) {
-                    setGameFlow(true);
-                    //console.log("join approved");
+            clientSocket.on("join-response", (/**@type {JoinResponse} */ response) => {
+                if (response.result == ProcessResult.SUCCESS) {
+                    gameFlow = true;
+                } else {
+                    triggerMessage(response.message);
                 }
             });
 
             clientSocket.on("update-score", (result) => setScores(result));
+
+            clientSocket.on("end-game", (msg)=>{
+                if(msg == true){
+                    mobs = [];
+                    gameFlow = false;
+                }
+            });
         }
         , []
     )
+
+    function triggerMessage(msg) {
+        setFailMessage(msg);
+        setShowMessage(true);
+    }
 
     function enemyPopWitch(id) {
         const result = findWitch(id);
@@ -75,15 +94,17 @@ export default function (props) {
     }
 
     function update(deltaT) {
-        mobs.forEach(w => w.update(deltaT));
-        for (let i = 0; i < yellowParticles.length; i++) {
-            if (yellowParticles[i] && !yellowParticles[i].update(deltaT)) {
-                yellowParticles.splice(i, 1);
+        if (gameFlow) {
+            mobs.forEach(w => w.update(deltaT));
+            for (let i = 0; i < yellowParticles.length; i++) {
+                if (yellowParticles[i] && !yellowParticles[i].update(deltaT)) {
+                    yellowParticles.splice(i, 1);
+                }
             }
-        }
-        for (let i = 0; i < redParticles.length; i++) {
-            if (redParticles[i] && !redParticles[i].update(deltaT)) {
-                redParticles.splice(i, 1);
+            for (let i = 0; i < redParticles.length; i++) {
+                if (redParticles[i] && !redParticles[i].update(deltaT)) {
+                    redParticles.splice(i, 1);
+                }
             }
         }
     }
@@ -174,11 +195,16 @@ export default function (props) {
         )
     }
 
+    function renderMessages() {
+        return <FailModal hide={!showMessage} setClose={setShowMessage}>{failMessage}</FailModal>
+    }
+
     return (
         <>
             <button onClick={testFunction}>test</button>
             <canvas id="game-canvas" width={CANVAS_WIDTH} height={CANVAS_HEIGHT} onClick={canvasClickHandler}></canvas>
             {renderScores()}
+            {renderMessages()}
         </>
     )
 }

@@ -32,3 +32,17 @@ button{
   left: 0;
   transform: translateX(-100%);
 }
+
+.hide{
+  display: none;
+}
+
+.message{
+
+}
+
+.close{
+  font-size: 3em;
+  user-select: none;
+  cursor: pointer;
+}

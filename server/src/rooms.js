@@ -1,5 +1,6 @@
 const { prcTimeout, prcInterval } = require("precision-timeout-interval");
 const { Socket } = require("socket.io");
+const { ProcessResult } = require("./globalTypes");
 
 /** @type {Array<Room>} */ let rooms = [];
 
@@ -9,6 +10,17 @@ const { Socket } = require("socket.io");
  * @property {string} username
  * @property {number} score
  */
+
+class JoinResponse {
+    /**
+     * @param {ProcessResult} result
+     * @param {String} message
+     */
+    constructor(result, message) {
+        this.result = result;
+        this.message = message;
+    }
+}
 
 class Room {
 
@@ -28,12 +40,12 @@ class Room {
         this.players.forEach(p => {
             p.socket.emit("room-is-closed", true);
         });
-        // this.players = undefined;
-        // this.witchId = undefined;
-        // this.aliveWitches = undefined;
-        // this.gameFlow = undefined;
-        // this.inactiveTimer = undefined;
         removeTheRoom(this.id);
+        this.players = undefined;
+        this.witchId = undefined;
+        this.aliveWitches = undefined;
+        this.gameFlow = undefined;
+        this.inactiveTimer = undefined;
     }
 
     resetActiveTimer() {
@@ -69,20 +81,26 @@ class Room {
                             return { username: p.username, score: p.score }
                         }));
                     });
-                    this.generateEnoughWitches();
+                    if (this.players.find(p => p.score >= 450)) {
+                        this.players.forEach(p => {
+                            p.socket.emit("end-game", true);
+                        });
+                    } else {
+                        this.generateEnoughWitches();
+                    }
                 }
             });
             console.log(username + " has joined to " + this.id);
-            return true;
+            return new JoinResponse(ProcessResult.SUCCESS, "");
         }
         console.log("Player couldnt join");
-        return false;
+        return new JoinResponse(ProcessResult.FAIL, "The room is FULL");
     }
 
-    generateEnoughWitches(){
-        let thereShouldBe = Math.floor((this.witchId + 2) / 2);
+    generateEnoughWitches() {
+        let thereShouldBe = Math.floor((this.witchId + 20) / 10);
         let remaining = thereShouldBe - this.aliveWitches.length;
-        if(remaining > 0){
+        if (remaining > 0) {
             this.genererateWitches(remaining);
         }
     }
@@ -176,10 +194,9 @@ function createRoom() {
 function joinRoomWithId(roomid, clientSocket, username) {
     const room = rooms.find(r => r.id == roomid);
     if (room) {
-        room.joinPlayer(clientSocket, username);
-        return true;
+        return room.joinPlayer(clientSocket, username);
     }
-    return false;
+    return new JoinResponse(ProcessResult.FAIL, "Room does not exist");
 }
 
 /**
