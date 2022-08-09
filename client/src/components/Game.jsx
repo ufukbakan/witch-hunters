@@ -16,6 +16,15 @@ export const FPS = 60;
 /**@type {Array<Particle>} */ let redParticles = [];
 let gameFlow = false;
 
+export const resetSocket = ()=>{
+    gameFlow = false;
+    clientSocket.disconnect();
+    clientSocket.connect();
+    mobs = [];
+    yellowParticles = [];
+    redParticles = [];
+};
+
 
 export default function (props) {
     const [myScore, setMyScore] = useState(0);
@@ -46,19 +55,24 @@ export default function (props) {
             });
 
             clientSocket.on("join-response", (/**@type {JoinResponse} */ response) => {
-                if (response.result == ProcessResult.SUCCESS) {
-                    gameFlow = true;
-                } else {
+                if (response.result == ProcessResult.FAIL) {
                     triggerMessage(response.message);
+                }else{
+                    triggerMessage("Joined the game");
                 }
             });
 
-            clientSocket.on("update-score", (result) => setScores(result));
+            clientSocket.on("game-is-ready", (scoreboard) => {
+                gameFlow = true;
+                setScores(scoreboard);
+            });
+            clientSocket.on("update-score", (scoreboard) => setScores(scoreboard));
 
-            clientSocket.on("end-game", (msg)=>{
-                if(msg == true){
+            clientSocket.on("end-game", (msg) => {
+                if (msg == true) {
                     mobs = [];
                     gameFlow = false;
+                    triggerMessage("Game\nOver");
                 }
             });
         }
