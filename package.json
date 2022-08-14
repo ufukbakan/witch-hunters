@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "preinstall": "npm i && npm --prefix server i && npm --prefix server audit fix --force && npm --prefix client i && npm --prefix client audit fix --force",
+    "preinstall": "npm --prefix server i && npm --prefix server audit fix --force && npm --prefix client i && npm --prefix client audit fix --force",
     "start": "concurrently \"npm --prefix server run start\" \"npm --prefix client run dev\"",
     "vercel-build": "forever start server/index.js && npm --prefix client run build",
-    "build": "npm --prefix client run build"
+    "build": "npm install && npm --prefix client run build"
   },
   "repository": {
     "type": "git",
