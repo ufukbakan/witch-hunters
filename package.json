@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "preinstall": "npm i && npm audit fix --force && cd server && npm i && npm audit fix --force && cd ../client &&npm i && npm audit fix --force",
+    "preinstall": "cd server && npm i && npm audit fix --force && cd ../client && npm i && npm audit fix --force",
+    "postinstall": "cd / && npm audit fix --force",
     "start": "concurrently \"npm --prefix server run start\" \"npm --prefix client run dev\"",
     "vercel-build": "forever start server/index.js && npm --prefix client run build",
     "build": "npm --prefix client run build"
