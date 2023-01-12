@@ -12,5 +12,11 @@ export default defineConfig({
   build: {
     target: "esnext",
     outDir: "../dist"
-  }
+  },
+  preview:{
+    port: 80,
+    host: true,
+    
+  },
+  logLevel: 'silent'
 })

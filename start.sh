@@ -1,4 +1,2 @@
-cd server
-(npm run start&)
-cd ../client
-(npm run dev&)
+apt-get install sudo -y
+sudo npm run start
